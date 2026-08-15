@@ -294,7 +294,7 @@
 </div>
 
 <script>
-const API_BASE = "http://localhost:4000/api/v1";
+const API_BASE = "https://plateforme-gateaux.onrender.com/api/v1";
 let accessToken = localStorage.getItem("admin_access_token") || "";
 let socket = null;
 
@@ -353,7 +353,7 @@ document.querySelectorAll(".nav-item").forEach(btn => {
 
 // ---------- WebSocket temps réel ----------
 function connectSocket() {
-  socket = io("http://localhost:4000", { auth: { token: accessToken } });
+  socket = io("https://plateforme-gateaux.onrender.com", { auth: { token: accessToken } });
   socket.on("connect", () => setWsStatus(true));
   socket.on("disconnect", () => setWsStatus(false));
   socket.on("connect_error", () => setWsStatus(false));
