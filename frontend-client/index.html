@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pâtisserie — Espace Client</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --ink: #2B1B14;
+    --ink-soft: #7A6A5F;
+    --line: #ECE6E1;
+    --raspberry: #C4295A;
+    --raspberry-dark: #A31F49;
+    --gold: #B8862B;
+    --success: #3E7D57;
+    --panel: #FBF9F7;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Work Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, .display {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  a { color: inherit; }
+  button { font-family: inherit; cursor: pointer; }
+
+  /* ---------- Header ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .header-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand img {
+    height: 44px;
+    width: 44px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+  }
+  .brand-name { font-size: 1.15rem; }
+  .brand-name span { display: block; font-family: 'Work Sans'; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; }
+
+  .header-actions { display: flex; align-items: center; gap: 14px; }
+  .lang-toggle {
+    display: flex;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .lang-toggle button {
+    border: none;
+    background: transparent;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .lang-toggle button.active { background: var(--ink); color: #fff; }
+
+  .cart-btn {
+    position: relative;
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cart-count {
+    background: var(--raspberry);
+    color: #fff;
+    font-size: 0.7rem;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 72px 24px 56px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--raspberry);
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: block;
+  }
+  .hero h1 {
+    font-size: clamp(2.2rem, 4.4vw, 3.4rem);
+    line-height: 1.08;
+  }
+  .hero p {
+    margin-top: 18px;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 46ch;
+  }
+  .hero-cta {
+    margin-top: 30px;
+    display: flex;
+    gap: 12px;
+  }
+  .btn-primary {
+    background: var(--raspberry);
+    color: #fff;
+    border: none;
+    padding: 14px 26px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    transition: background 0.15s ease;
+  }
+  .btn-primary:hover { background: var(--raspberry-dark); }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--line);
+    padding: 14px 26px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--ink);
+  }
+
+  .hero-frame {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    aspect-ratio: 4/5;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-frame img { width: 62%; opacity: 0.92; }
+
+  /* Bordure "glaçage" — signature visuelle */
+  .frosting-divider {
+    max-width: 1120px;
+    margin: 0 auto;
+    height: 22px;
+    background-repeat: repeat-x;
+    background-size: 44px 22px;
+    background-image: radial-gradient(circle at 22px 0, transparent 20px, var(--panel) 21px);
+    opacity: 0.9;
+  }
+
+  /* ---------- Sections ---------- */
+  section { max-width: 1120px; margin: 0 auto; padding: 56px 24px; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .section-head h2 { font-size: 1.7rem; }
+  .section-head p { color: var(--ink-soft); font-size: 0.9rem; margin: 4px 0 0; }
+
+  .filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 26px; }
+  .filter-chip {
+    border: 1px solid var(--line);
+    background: #fff;
+    padding: 7px 15px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .filter-chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 22px;
+  }
+  .card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .card:hover { box-shadow: 0 12px 28px -18px rgba(43,27,20,0.28); transform: translateY(-2px); }
+  .card-img {
+    aspect-ratio: 4/3;
+    background: var(--panel);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; }
+  .card-body { padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .card-body h3 { font-size: 1.02rem; font-weight: 600; }
+  .card-desc { font-size: 0.82rem; color: var(--ink-soft); line-height: 1.45; flex: 1; }
+  .card-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+  .price { font-family: 'Fraunces'; font-weight: 600; font-size: 1.05rem; }
+  .add-btn {
+    border: none;
+    background: var(--ink);
+    color: #fff;
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .add-btn:hover { background: var(--raspberry); }
+  .out-of-stock { font-size: 0.72rem; color: var(--raspberry); font-weight: 600; }
+
+  .empty-state, .error-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-soft);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+  }
+  .error-state strong { color: var(--ink); display: block; margin-bottom: 6px; font-family: 'Fraunces'; font-size: 1.1rem; }
+
+  /* ---------- Panier (drawer) ---------- */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(43,27,20,0.35);
+    opacity: 0; pointer-events: none; transition: opacity 0.2s ease; z-index: 50;
+  }
+  .overlay.open { opacity: 1; pointer-events: all; }
+
+  .drawer {
+    position: fixed; top: 0; right: 0; height: 100%; width: min(420px, 92vw);
+    background: #fff; z-index: 51; transform: translateX(100%);
+    transition: transform 0.25s ease; display: flex; flex-direction: column;
+    border-left: 1px solid var(--line);
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-head {
+    padding: 20px 22px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .drawer-head h3 { font-size: 1.2rem; }
+  .close-btn { border: none; background: none; font-size: 1.3rem; color: var(--ink-soft); }
+
+  .drawer-items { flex: 1; overflow-y: auto; padding: 16px 22px; }
+  .cart-item { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .cart-item img { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; background: var(--panel); }
+  .cart-item-info { flex: 1; }
+  .cart-item-info h4 { font-size: 0.9rem; font-weight: 600; margin: 0 0 4px; }
+  .qty-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .qty-btn { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); background: #fff; font-size: 0.85rem; }
+  .remove-link { font-size: 0.72rem; color: var(--raspberry); background: none; border: none; margin-top: 6px; padding: 0; }
+
+  .drawer-foot { padding: 20px 22px; border-top: 1px solid var(--line); }
+  .total-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px; color: var(--ink-soft); }
+  .total-row.grand { color: var(--ink); font-weight: 700; font-size: 1.05rem; margin-top: 10px; }
+
+  .field { margin-top: 14px; }
+  .field label { font-size: 0.78rem; font-weight: 600; color: var(--ink-soft); display: block; margin-bottom: 6px; }
+  .field input, .field textarea {
+    width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+    font-family: inherit; font-size: 0.88rem; background: var(--panel);
+  }
+  .field textarea { resize: vertical; min-height: 56px; }
+
+  .checkout-btn {
+    width: 100%; margin-top: 16px; background: var(--raspberry); color: #fff; border: none;
+    padding: 14px; border-radius: 999px; font-weight: 700; font-size: 0.92rem;
+  }
+  .checkout-btn:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
+  .msg { font-size: 0.8rem; margin-top: 10px; text-align: center; }
+  .msg.success { color: var(--success); }
+  .msg.error { color: var(--raspberry); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 32px 24px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; padding-top: 40px; }
+    .hero-frame { order: -1; aspect-ratio: 16/10; }
+  }
+
+  :focus-visible { outline: 2px solid var(--raspberry); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <img src="https://i.ibb.co/2YP63ztg/IMG-20260813-WA0017.jpg" alt="Logo pâtisserie">
+      <div class="brand-name" data-i18n="brandName">Douceurs d'Ivoire<span data-i18n="brandTag">Pâtisserie artisanale</span></div>
+    </div>
+    <div class="header-actions">
+      <div class="lang-toggle">
+        <button id="lang-fr" class="active">FR</button>
+        <button id="lang-en">EN</button>
+      </div>
+      <button class="cart-btn" id="cart-toggle">
+        <span data-i18n="cart">Panier</span>
+        <span class="cart-count" id="cart-count">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div>
+    <span class="hero-eyebrow" data-i18n="heroEyebrow">Fait maison, chaque jour</span>
+    <h1 data-i18n="heroTitle">Des gâteaux qui rendent chaque instant plus doux</h1>
+    <p data-i18n="heroText">Commandez en quelques clics et faites-vous livrer un gâteau préparé le jour même, avec des ingrédients choisis avec soin.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="document.getElementById('catalogue').scrollIntoView({behavior:'smooth'})" data-i18n="heroBtn1">Voir le catalogue</button>
+      <button class="btn-ghost" id="cart-toggle-2" data-i18n="heroBtn2">Mon panier</button>
+    </div>
+  </div>
+  <div class="hero-frame">
+    <img src="https://i.ibb.co/2YP63ztg/IMG-20260813-WA0017.jpg" alt="Logo">
+  </div>
+</section>
+
+<div class="frosting-divider"></div>
+
+<section id="bestsellers">
+  <div class="section-head">
+    <div>
+      <h2 data-i18n="bestTitle">Les plus demandés</h2>
+      <p data-i18n="bestSub">Ce que nos clients recommandent le plus</p>
+    </div>
+  </div>
+  <div class="grid" id="bestsellers-grid"></div>
+</section>
+
+<section id="catalogue">
+  <div class="section-head">
+    <div>
+      <h2 data-i18n="catTitle">Notre catalogue</h2>
+      <p data-i18n="catSub">Filtrez par catégorie pour trouver votre gâteau</p>
+    </div>
+  </div>
+  <div class="filters" id="category-filters"></div>
+  <div class="grid" id="products-grid"></div>
+</section>
+
+<footer>
+  <span data-i18n="footer">© 2026 Douceurs d'Ivoire — Pâtisserie artisanale, Côte d'Ivoire</span>
+</footer>
+
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3 data-i18n="cartTitle">Votre panier</h3>
+    <button class="close-btn" id="drawer-close">&times;</button>
+  </div>
+  <div class="drawer-items" id="drawer-items"></div>
+  <div class="drawer-foot">
+    <div class="field">
+      <label data-i18n="addrLabel">Adresse de livraison</label>
+      <input type="text" id="delivery-address" data-i18n-ph="addrPh" placeholder="Ex: Cocody, Rue des Jardins">
+    </div>
+    <div class="field">
+      <label data-i18n="notesLabel">Note pour le vendeur (optionnel)</label>
+      <textarea id="delivery-notes" data-i18n-ph="notesPh" placeholder="Ex: message sur le gâteau, étage, heure préférée..."></textarea>
+    </div>
+    <div style="margin-top:16px;">
+      <div class="total-row"><span data-i18n="subtotal">Sous-total</span><span id="subtotal">0 XOF</span></div>
+      <div class="total-row"><span data-i18n="delivery">Livraison</span><span id="delivery-fee">1 500 XOF</span></div>
+      <div class="total-row grand"><span data-i18n="total">Total</span><span id="grand-total">0 XOF</span></div>
+    </div>
+    <button class="checkout-btn" id="checkout-btn" data-i18n="checkoutBtn">Valider la commande</button>
+    <div class="msg" id="checkout-msg"></div>
+  </div>
+</aside>
+
+<script>
+const API_BASE = "http://localhost:4000/api/v1";
+
+const i18n = {
+  fr: {
+    brandName: "Douceurs d'Ivoire", brandTag: "Pâtisserie artisanale",
+    cart: "Panier", heroEyebrow: "Fait maison, chaque jour",
+    heroTitle: "Des gâteaux qui rendent chaque instant plus doux",
+    heroText: "Commandez en quelques clics et faites-vous livrer un gâteau préparé le jour même, avec des ingrédients choisis avec soin.",
+    heroBtn1: "Voir le catalogue", heroBtn2: "Mon panier",
+    bestTitle: "Les plus demandés", bestSub: "Ce que nos clients recommandent le plus",
+    catTitle: "Notre catalogue", catSub: "Filtrez par catégorie pour trouver votre gâteau",
+    footer: "© 2026 Douceurs d'Ivoire — Pâtisserie artisanale, Côte d'Ivoire",
+    cartTitle: "Votre panier", addrLabel: "Adresse de livraison", addrPh: "Ex: Cocody, Rue des Jardins",
+    notesLabel: "Note pour le vendeur (optionnel)", notesPh: "Ex: message sur le gâteau, étage, heure préférée...",
+    subtotal: "Sous-total", delivery: "Livraison", total: "Total", checkoutBtn: "Valider la commande",
+    emptyCart: "Votre panier est vide.", addToCart: "Ajouter", outOfStock: "Rupture de stock",
+    all: "Tous", loadError: "Impossible de charger le catalogue. Vérifie que l'API tourne sur", 
+    orderSuccess: "Commande envoyée avec succès !", orderError: "Une erreur est survenue.",
+    addrRequired: "Merci de renseigner une adresse de livraison.",
+  },
+  en: {
+    brandName: "Douceurs d'Ivoire", brandTag: "Artisan bakery",
+    cart: "Cart", heroEyebrow: "Handmade, every day",
+    heroTitle: "Cakes that make every moment a little sweeter",
+    heroText: "Order in a few clicks and get a freshly made cake delivered the same day, with carefully selected ingredients.",
+    heroBtn1: "View catalogue", heroBtn2: "My cart",
+    bestTitle: "Most loved", bestSub: "What our customers recommend the most",
+    catTitle: "Our catalogue", catSub: "Filter by category to find your cake",
+    footer: "© 2026 Douceurs d'Ivoire — Artisan bakery, Côte d'Ivoire",
+    cartTitle: "Your cart", addrLabel: "Delivery address", addrPh: "e.g. Cocody, Garden Street",
+    notesLabel: "Note for the seller (optional)", notesPh: "e.g. message on the cake, floor, preferred time...",
+    subtotal: "Subtotal", delivery: "Delivery", total: "Total", checkoutBtn: "Confirm order",
+    emptyCart: "Your cart is empty.", addToCart: "Add", outOfStock: "Out of stock",
+    all: "All", loadError: "Could not load the catalogue. Check that the API is running on",
+    orderSuccess: "Order placed successfully!", orderError: "Something went wrong.",
+    addrRequired: "Please provide a delivery address.",
+  }
+};
+
+let currentLang = "fr";
+let cart = []; // { productId, name, price, quantity, image }
+let categories = [];
+let activeCategory = null;
+let allProducts = [];
+
+const t = (key) => i18n[currentLang][key] || key;
+const money = (n) => new Intl.NumberFormat("fr-FR").format(Math.round(n)) + " XOF";
+
+function applyI18n() {
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    el.childNodes.length && el.firstChild.nodeType === 3
+      ? (el.firstChild.textContent = t(el.dataset.i18n))
+      : (el.textContent = t(el.dataset.i18n));
+  });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => {
+    el.placeholder = t(el.dataset.i18nPh);
+  });
+}
+
+document.getElementById("lang-fr").onclick = () => switchLang("fr");
+document.getElementById("lang-en").onclick = () => switchLang("en");
+function switchLang(lang) {
+  currentLang = lang;
+  document.getElementById("lang-fr").classList.toggle("active", lang === "fr");
+  document.getElementById("lang-en").classList.toggle("active", lang === "en");
+  applyI18n();
+  loadProducts();
+  loadBestsellers();
+  renderCart();
+}
+
+function productImage(p) {
+  return p.images?.[0]?.url || "";
+}
+function productName(p) {
+  return p.translations?.[0]?.name || p.sku;
+}
+function productDesc(p) {
+  return p.translations?.[0]?.description || "";
+}
+
+async function loadCategories() {
+  // Pas d'endpoint catégories dédié listé — on déduit depuis les produits chargés
+}
+
+async function loadProducts() {
+  const grid = document.getElementById("products-grid");
+  grid.innerHTML = `<div class="empty-state">…</div>`;
+  try {
+    const url = new URL(API_BASE + "/shop/products");
+    url.searchParams.set("locale", currentLang);
+    if (activeCategory) url.searchParams.set("categoryId", activeCategory);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const json = await res.json();
+    allProducts = json.data || [];
+    renderCategoryFilters(allProducts);
+    renderProducts(allProducts, grid);
+  } catch (err) {
+    grid.innerHTML = `<div class="error-state"><strong>Oups</strong>${t("loadError")} ${API_BASE.replace('/api/v1','')}</div>`;
+  }
+}
+
+async function loadBestsellers() {
+  const grid = document.getElementById("bestsellers-grid");
+  try {
+    const url = new URL(API_BASE + "/shop/products/best-sellers");
+    url.searchParams.set("locale", currentLang);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error();
+    const json = await res.json();
+    const items = json.data || [];
+    if (items.length === 0) {
+      document.getElementById("bestsellers").style.display = "none";
+      return;
+    }
+    document.getElementById("bestsellers").style.display = "";
+    renderProducts(items, grid);
+  } catch {
+    document.getElementById("bestsellers").style.display = "none";
+  }
+}
+
+function renderCategoryFilters(products) {
+  const seen = new Map();
+  products.forEach(p => { if (p.categoryId) seen.set(p.categoryId, p.categoryId); });
+  const container = document.getElementById("category-filters");
+  container.innerHTML = "";
+  const allChip = document.createElement("button");
+  allChip.className = "filter-chip" + (!activeCategory ? " active" : "");
+  allChip.textContent = t("all");
+  allChip.onclick = () => { activeCategory = null; loadProducts(); };
+  container.appendChild(allChip);
+  seen.forEach((id) => {
+    const chip = document.createElement("button");
+    chip.className = "filter-chip" + (activeCategory === id ? " active" : "");
+    chip.textContent = id.slice(0, 8);
+    chip.onclick = () => { activeCategory = id; loadProducts(); };
+    container.appendChild(chip);
+  });
+}
+
+function renderProducts(products, grid) {
+  if (products.length === 0) {
+    grid.innerHTML = `<div class="empty-state">${t("emptyCart")}</div>`;
+    return;
+  }
+  grid.innerHTML = "";
+  products.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "card";
+    const img = productImage(p);
+    card.innerHTML = `
+      <div class="card-img">${img ? `<img src="${img}" alt="${productName(p)}">` : ""}</div>
+      <div class="card-body">
+        <h3>${productName(p)}</h3>
+        <div class="card-desc">${productDesc(p)}</div>
+        <div class="card-foot">
+          <span class="price">${money(p.basePrice)}</span>
+          ${p.stock > 0
+            ? `<button class="add-btn" data-id="${p.id}">${t("addToCart")}</button>`
+            : `<span class="out-of-stock">${t("outOfStock")}</span>`}
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+  grid.querySelectorAll(".add-btn").forEach(btn => {
+    btn.onclick = () => addToCart(btn.dataset.id);
+  });
+}
+
+function addToCart(productId) {
+  const product = allProducts.find(p => p.id === productId) ||
+                  Array.from(document.querySelectorAll(".card")).length && null;
+  const source = product || findAnywhere(productId);
+  if (!source) return;
+  const existing = cart.find(i => i.productId === productId);
+  if (existing) {
+    existing.quantity += 1;
+  } else {
+    cart.push({
+      productId,
+      name: productName(source),
+      price: Number(source.basePrice),
+      quantity: 1,
+      image: productImage(source),
+    });
+  }
+  renderCart();
+  openDrawer();
+}
+
+function findAnywhere(id) {
+  return allProducts.find(p => p.id === id);
+}
+
+function renderCart() {
+  document.getElementById("cart-count").textContent = cart.reduce((s, i) => s + i.quantity, 0);
+  const container = document.getElementById("drawer-items");
+  if (cart.length === 0) {
+    container.innerHTML = `<div class="empty-state">${t("emptyCart")}</div>`;
+  } else {
+    container.innerHTML = "";
+    cart.forEach(item => {
+      const row = document.createElement("div");
+      row.className = "cart-item";
+      row.innerHTML = `
+        ${item.image ? `<img src="${item.image}" alt="${item.name}">` : `<div style="width:56px;height:56px;border-radius:10px;background:var(--panel)"></div>`}
+        <div class="cart-item-info">
+          <h4>${item.name}</h4>
+          <div>${money(item.price)}</div>
+          <div class="qty-row">
+            <button class="qty-btn" data-action="dec" data-id="${item.productId}">−</button>
+            <span>${item.quantity}</span>
+            <button class="qty-btn" data-action="inc" data-id="${item.productId}">+</button>
+          </div>
+          <button class="remove-link" data-action="remove" data-id="${item.productId}">Retirer</button>
+        </div>`;
+      container.appendChild(row);
+    });
+    container.querySelectorAll("button[data-action]").forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.dataset.id;
+        const item = cart.find(i => i.productId === id);
+        if (btn.dataset.action === "inc") item.quantity += 1;
+        if (btn.dataset.action === "dec") item.quantity = Math.max(1, item.quantity - 1);
+        if (btn.dataset.action === "remove") cart = cart.filter(i => i.productId !== id);
+        renderCart();
+      };
+    });
+  }
+
+  const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const deliveryFee = cart.length ? 1500 : 0;
+  document.getElementById("subtotal").textContent = money(subtotal);
+  document.getElementById("delivery-fee").textContent = money(deliveryFee);
+  document.getElementById("grand-total").textContent = money(subtotal + deliveryFee);
+  document.getElementById("checkout-btn").disabled = cart.length === 0;
+}
+
+function openDrawer() {
+  document.getElementById("drawer").classList.add("open");
+  document.getElementById("overlay").classList.add("open");
+}
+function closeDrawer() {
+  document.getElementById("drawer").classList.remove("open");
+  document.getElementById("overlay").classList.remove("open");
+}
+document.getElementById("cart-toggle").onclick = openDrawer;
+document.getElementById("cart-toggle-2").onclick = openDrawer;
+document.getElementById("drawer-close").onclick = closeDrawer;
+document.getElementById("overlay").onclick = closeDrawer;
+
+document.getElementById("checkout-btn").onclick = async () => {
+  const address = document.getElementById("delivery-address").value.trim();
+  const notes = document.getElementById("delivery-notes").value.trim();
+  const msg = document.getElementById("checkout-msg");
+  msg.textContent = ""; msg.className = "msg";
+
+  if (!address) {
+    msg.textContent = t("addrRequired");
+    msg.classList.add("error");
+    return;
+  }
+
+  const accessToken = localStorage.getItem("client_access_token");
+  if (!accessToken) {
+    msg.textContent = currentLang === "fr"
+      ? "Connecte-toi pour valider ta commande (auth non branchée sur cette démo d'UI)."
+      : "Log in to place your order (auth not wired into this UI demo).";
+    msg.classList.add("error");
+    return;
+  }
+
+  try {
+    const res = await fetch(API_BASE + "/shop/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + accessToken,
+      },
+      body: JSON.stringify({
+        items: cart.map(i => ({ productId: i.productId, quantity: i.quantity })),
+        deliveryAddress: address,
+        deliveryNotes: notes || undefined,
+      }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.message || "Erreur");
+    msg.textContent = t("orderSuccess");
+    msg.classList.add("success");
+    cart = [];
+    renderCart();
+  } catch (err) {
+    msg.textContent = err.message || t("orderError");
+    msg.classList.add("error");
+  }
+};
+
+applyI18n();
+loadProducts();
+loadBestsellers();
+renderCart();
+</script>
+</body>
+</html>
