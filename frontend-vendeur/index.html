@@ -138,12 +138,32 @@
   .connection-dot.connected { background: var(--success); }
   .connection-status { font-size: 0.76rem; color: var(--ink-soft); display: flex; align-items: center; }
 
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -4px; }
+  .table-scroll table { min-width: 560px; }
+
   @media (max-width: 860px) {
     #app.active { grid-template-columns: 1fr; }
-    .sidebar { display: flex; flex-direction: row; align-items: center; padding: 14px 18px; }
-    .sidebar .brand { margin-bottom: 0; }
-    .sidebar-nav, .sidebar-foot { display: none; }
-    main { padding: 22px; }
+    .sidebar {
+      display: flex; flex-direction: row; align-items: center; padding: 10px 14px;
+      gap: 14px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    }
+    .sidebar .brand { margin-bottom: 0; flex-shrink: 0; }
+    .sidebar .brand-name span { display: none; }
+    .sidebar-nav { display: flex; flex-direction: row; gap: 4px; flex-shrink: 0; }
+    .nav-item { white-space: nowrap; margin-bottom: 0; padding: 9px 12px; }
+    .sidebar-foot {
+      display: flex; align-items: center; gap: 12px; margin-top: 0; margin-left: auto;
+      padding-top: 0; border-top: none; flex-shrink: 0;
+    }
+    .connection-status span:last-child { display: none; }
+    .logout-btn { white-space: nowrap; }
+    main { padding: 20px 16px; }
+    .field-row { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .page-head h2 { font-size: 1.3rem; }
+    .stat-card .value { font-size: 1.5rem; }
   }
 </style>
 </head>
@@ -152,7 +172,7 @@
 <!-- ================= LOGIN ================= -->
 <div id="login-screen">
   <div class="login-card">
-    <img src="https://i.ibb.co/2YP63ztg/IMG-20260813-WA0017.jpg" alt="Logo">
+    <img src="https://i.ibb.co/jkrb9Hvq/file-00000000a35881f4b54043417d4310df.png" alt="Logo">
     <h1>Espace Vendeur</h1>
     <p>Connectez-vous pour gérer votre boutique.</p>
     <div class="field">
@@ -172,7 +192,7 @@
 <div id="app">
   <aside class="sidebar">
     <div class="brand">
-      <img src="https://i.ibb.co/2YP63ztg/IMG-20260813-WA0017.jpg" alt="Logo">
+      <img src="https://i.ibb.co/jkrb9Hvq/file-00000000a35881f4b54043417d4310df.png" alt="Logo">
       <div class="brand-name">Douceurs d'Ivoire<span>Espace vendeur</span></div>
     </div>
     <nav class="sidebar-nav">
@@ -199,10 +219,12 @@
         <div class="stat-card"><div class="label">Produits au catalogue</div><div class="value" id="stat-products">—</div></div>
       </div>
       <div class="page-head"><h2 style="font-size:1.2rem">Dernières commandes</h2></div>
-      <table>
-        <thead><tr><th>N°</th><th>Client</th><th>Total</th><th>Statut</th></tr></thead>
-        <tbody id="dashboard-orders-body"></tbody>
-      </table>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>N°</th><th>Client</th><th>Total</th><th>Statut</th></tr></thead>
+          <tbody id="dashboard-orders-body"></tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Orders -->
@@ -217,10 +239,12 @@
           <option value="ANNULE">Annulé</option>
         </select>
       </div>
-      <table>
-        <thead><tr><th>N°</th><th>Client</th><th>Adresse</th><th>Total</th><th>Statut</th><th></th></tr></thead>
-        <tbody id="orders-body"></tbody>
-      </table>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>N°</th><th>Client</th><th>Adresse</th><th>Total</th><th>Statut</th><th></th></tr></thead>
+          <tbody id="orders-body"></tbody>
+        </table>
+      </div>
       <div class="empty-state" id="orders-empty" style="display:none;">Aucune commande pour le moment.</div>
     </div>
 
@@ -230,10 +254,12 @@
         <div><h2>Produits</h2><p style="color:var(--ink-soft);font-size:0.88rem;margin:4px 0 0;">Gérez votre catalogue de gâteaux</p></div>
         <button class="btn-add" id="open-product-modal">+ Ajouter un gâteau</button>
       </div>
-      <table>
-        <thead><tr><th></th><th>Nom</th><th>Prix</th><th>Stock</th><th>Disponible</th></tr></thead>
-        <tbody id="products-body"></tbody>
-      </table>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th></th><th>Nom</th><th>Prix</th><th>Stock</th><th>Disponible</th></tr></thead>
+          <tbody id="products-body"></tbody>
+        </table>
+      </div>
       <div class="empty-state" id="products-empty" style="display:none;">Aucun produit pour le moment. Ajoutez votre premier gâteau.</div>
     </div>
   </main>
@@ -409,7 +435,7 @@ async function loadProducts() {
       const img = p.images?.[0]?.url || "";
       const name = p.translations?.[0]?.name || p.sku;
       tr.innerHTML = `
-        <td>${img ? `<img class="prod-thumb" src="${img}">` : `<div class="prod-thumb"></div>`}</td>
+        <td>${img ? `<img class="prod-thumb" src="${img}" loading="lazy" decoding="async" width="42" height="42">` : `<div class="prod-thumb"></div>`}</td>
         <td>${name}</td>
         <td>${money(p.basePrice)}</td>
         <td>${p.stock}</td>
