@@ -31,7 +31,7 @@
 
   /* ---------- Login ---------- */
   #login-screen {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+    min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 24px;
     background: var(--panel);
   }
   .login-card {
@@ -56,7 +56,7 @@
   .login-msg { font-size: 0.82rem; color: var(--raspberry); margin-top: 12px; text-align: center; min-height: 1em; }
 
   /* ---------- App layout ---------- */
-  #app { display: none; min-height: 100vh; grid-template-columns: 240px 1fr; }
+  #app { display: none; min-height: 100vh; min-height: 100dvh; grid-template-columns: 240px 1fr; }
   #app.active { display: grid; }
 
   .sidebar {
@@ -329,7 +329,7 @@
 </div>
 
 <script>
-const API_BASE = "http://localhost:4000/api/v1";
+const API_BASE = "https://plateforme-gateaux.onrender.com/api/v1";
 let accessToken = localStorage.getItem("admin_access_token") || "";
 let socket = null;
 
@@ -388,7 +388,7 @@ document.querySelectorAll(".nav-item").forEach(btn => {
 
 // ---------- WebSocket temps réel ----------
 function connectSocket() {
-  socket = io("http://localhost:4000", { auth: { token: accessToken } });
+  socket = io("https://plateforme-gateaux.onrender.com", { auth: { token: accessToken } });
   socket.on("connect", () => setWsStatus(true));
   socket.on("disconnect", () => setWsStatus(false));
   socket.on("connect_error", () => setWsStatus(false));
