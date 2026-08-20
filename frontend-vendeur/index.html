@@ -109,6 +109,9 @@
   .status-select { border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font-size: 0.8rem; background: #fff; }
 
   .prod-thumb { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; background: var(--panel); }
+  .btn-delete-product { background: none; border: none; font-size: 1rem; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+  .btn-delete-product:hover { background: #FCEAF0; }
+  .btn-delete-product:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .btn-add {
     background: var(--ink); color: #fff; border: none; padding: 11px 20px; border-radius: 999px;
@@ -256,7 +259,7 @@
       </div>
       <div class="table-scroll">
         <table>
-          <thead><tr><th></th><th>Nom</th><th>Prix</th><th>Stock</th><th>Disponible</th></tr></thead>
+          <thead><tr><th></th><th>Nom</th><th>Prix</th><th>Stock</th><th>Disponible</th><th></th></tr></thead>
           <tbody id="products-body"></tbody>
         </table>
       </div>
@@ -427,6 +430,11 @@ async function apiFetch(path, options = {}) {
 
 // ---------- Produits ----------
 let productCount = 0;
+function optimizeImg(url, width) {
+  if (!url || !url.includes("res.cloudinary.com")) return url;
+  return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
+}
+
 async function loadProducts() {
   try {
     const res = await apiFetch("/shop/products?locale=fr");
@@ -441,18 +449,36 @@ async function loadProducts() {
     empty.style.display = "none";
     products.forEach(p => {
       const tr = document.createElement("tr");
-      const img = p.images?.[0]?.url || "";
+      const img = optimizeImg(p.images?.[0]?.url || "", 100);
       const name = p.translations?.[0]?.name || p.sku;
       tr.innerHTML = `
         <td>${img ? `<img class="prod-thumb" src="${img}" loading="lazy" decoding="async" width="42" height="42">` : `<div class="prod-thumb"></div>`}</td>
         <td>${name}</td>
         <td>${money(p.basePrice)}</td>
         <td>${p.stock}</td>
-        <td>${p.isAvailable ? "✅" : "❌"}</td>`;
+        <td>${p.isAvailable ? "✅" : "❌"}</td>
+        <td><button class="btn-delete-product" data-id="${p.id}" data-name="${name}" title="Supprimer">🗑️</button></td>`;
       body.appendChild(tr);
     });
   } catch (err) { console.error(err); }
 }
+
+document.getElementById("products-body").addEventListener("click", async (e) => {
+  const btn = e.target.closest(".btn-delete-product");
+  if (!btn) return;
+  const { id, name } = btn.dataset;
+  if (!confirm(`Supprimer définitivement "${name}" ? Cette action est irréversible.`)) return;
+  btn.disabled = true;
+  try {
+    const res = await apiFetch(`/admin/products/${id}`, { method: "DELETE" });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.message || "Erreur lors de la suppression.");
+    loadProducts();
+  } catch (err) {
+    alert(err.message || "Erreur lors de la suppression.");
+    btn.disabled = false;
+  }
+});
 
 let categoriesCache = [];
 async function loadCategories() {
