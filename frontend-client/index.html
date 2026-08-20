@@ -72,6 +72,39 @@
   .brand-name span { display: block; font-family: 'Work Sans'; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; }
 
   .header-actions { display: flex; align-items: center; gap: 14px; }
+
+  /* ---------- Icônes header (menu, recherche) ---------- */
+  .icon-btn {
+    border: 1px solid var(--line); background: #fff; width: 40px; height: 40px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 1.05rem; flex-shrink: 0; color: var(--ink);
+  }
+  .icon-btn:hover { background: var(--panel); }
+  .brand { flex: 1; justify-content: center; }
+
+  .search-bar { max-height: 0; overflow: hidden; transition: max-height 0.2s ease; }
+  .search-bar.open { max-height: 70px; }
+  .search-bar-inner { max-width: 1120px; margin: 0 auto; padding: 0 24px 14px; }
+  .search-bar input {
+    width: 100%; border: 1px solid var(--line); border-radius: 999px; padding: 10px 16px;
+    font-family: inherit; font-size: 0.88rem; background: var(--panel);
+  }
+
+  /* ---------- Menu latéral ---------- */
+  .nav-drawer {
+    position: fixed; top: 0; left: 0; height: 100%; width: min(300px, 88vw);
+    background: #fff; z-index: 51; transform: translateX(-100%);
+    transition: transform 0.25s ease; display: flex; flex-direction: column;
+    border-right: 1px solid var(--line);
+  }
+  .nav-drawer.open { transform: translateX(0); }
+  .nav-drawer-head { padding: 20px 22px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+  .nav-drawer-head h3 { font-size: 1.1rem; }
+  .nav-links { padding: 10px; display: flex; flex-direction: column; }
+  .nav-links button { text-align: left; border: none; background: none; padding: 12px; border-radius: 10px; font-size: 0.95rem; font-weight: 600; color: var(--ink); }
+  .nav-links button:hover { background: var(--panel); }
+  .nav-drawer-foot { padding: 16px 22px; border-top: 1px solid var(--line); margin-top: auto; }
+
   .lang-toggle {
     display: flex;
     border: 1px solid var(--line);
@@ -169,18 +202,25 @@
     color: var(--ink);
   }
 
-  .hero-frame {
-    position: relative;
-    border-radius: 24px;
-    overflow: hidden;
-    aspect-ratio: 4/5;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .hero-carousel {
+    position: relative; border-radius: 24px; overflow: hidden; aspect-ratio: 4/5;
+    background: var(--panel); border: 1px solid var(--line);
   }
-  .hero-frame img { width: 62%; opacity: 0.92; }
+  .hero-slide {
+    position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s ease;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hero-slide.active { opacity: 1; }
+  .hero-slide img { width: 100%; height: 100%; object-fit: cover; }
+  .hero-slide-logo img { width: 62%; height: auto; opacity: 0.92; object-fit: contain; }
+  .hero-slide-caption {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 16px;
+    background: linear-gradient(to top, rgba(43,27,20,0.65), transparent);
+    color: #fff; font-family: 'Fraunces'; font-size: 1.05rem; font-weight: 600;
+  }
+  .hero-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 2; }
+  .hero-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.55); border: none; padding: 0; cursor: pointer; transition: width 0.2s ease; }
+  .hero-dot.active { background: #fff; width: 18px; border-radius: 4px; }
 
   /* Bordure "glaçage" — signature visuelle */
   .frosting-divider {
@@ -234,6 +274,7 @@
   }
   .card:hover { box-shadow: 0 12px 28px -18px rgba(43,27,20,0.28); transform: translateY(-2px); }
   .card-img {
+    position: relative;
     aspect-ratio: 4/3;
     background: var(--panel);
     display: flex;
@@ -242,6 +283,15 @@
     overflow: hidden;
   }
   .card-img img { width: 100%; height: 100%; object-fit: cover; }
+  .card-badge {
+    position: absolute; top: 8px; left: 8px; width: 26px; height: 26px; border-radius: 50%;
+    background: #fff; padding: 2px; box-shadow: 0 2px 6px rgba(43,27,20,0.18);
+  }
+  .card-badge img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+  .card-ribbon {
+    position: absolute; top: 8px; right: 8px; background: var(--raspberry); color: #fff;
+    font-size: 0.65rem; font-weight: 700; padding: 3px 9px; border-radius: 999px;
+  }
   .card-body { padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
   .card-body h3 { font-size: 1.02rem; font-weight: 600; }
   .card-desc { font-size: 0.82rem; color: var(--ink-soft); line-height: 1.45; flex: 1; }
@@ -329,7 +379,7 @@
 
   @media (max-width: 760px) {
     .hero { grid-template-columns: 1fr; padding-top: 40px; }
-    .hero-frame { order: -1; aspect-ratio: 16/10; }
+    .hero-carousel { order: -1; aspect-ratio: 16/10; }
   }
 
   :focus-visible { outline: 2px solid var(--raspberry); outline-offset: 2px; }
@@ -339,19 +389,22 @@
 
 <header>
   <div class="header-inner">
+    <button class="icon-btn" id="menu-toggle" aria-label="Menu">☰</button>
     <div class="brand">
       <img src="https://i.ibb.co/jkrb9Hvq/file-00000000a35881f4b54043417d4310df.png" alt="Logo pâtisserie">
       <div class="brand-name" data-i18n="brandName">Douceurs d'Ivoire<span data-i18n="brandTag">Pâtisserie artisanale</span></div>
     </div>
     <div class="header-actions">
-      <div class="lang-toggle">
-        <button id="lang-fr" class="active">FR</button>
-        <button id="lang-en">EN</button>
-      </div>
+      <button class="icon-btn" id="search-toggle" aria-label="Rechercher">🔍</button>
       <button class="cart-btn" id="cart-toggle">
         <span data-i18n="cart">Panier</span>
         <span class="cart-count" id="cart-count">0</span>
       </button>
+    </div>
+  </div>
+  <div class="search-bar" id="search-bar">
+    <div class="search-bar-inner">
+      <input type="text" id="search-input" data-i18n-ph="searchPh" placeholder="Rechercher un gâteau...">
     </div>
   </div>
 </header>
@@ -366,8 +419,10 @@
       <button class="btn-ghost" id="cart-toggle-2" data-i18n="heroBtn2">Mon panier</button>
     </div>
   </div>
-  <div class="hero-frame">
-    <img src="https://i.ibb.co/jkrb9Hvq/file-00000000a35881f4b54043417d4310df.png" alt="Logo">
+  <div class="hero-carousel" id="hero-carousel">
+    <div class="hero-slide hero-slide-logo active">
+      <img src="https://i.ibb.co/jkrb9Hvq/file-00000000a35881f4b54043417d4310df.png" alt="Logo">
+    </div>
   </div>
 </section>
 
@@ -424,6 +479,24 @@
   </div>
 </aside>
 
+<div class="overlay" id="nav-overlay"></div>
+<aside class="nav-drawer" id="nav-drawer">
+  <div class="nav-drawer-head">
+    <h3 data-i18n="menuTitle">Menu</h3>
+    <button class="close-btn" id="nav-drawer-close">&times;</button>
+  </div>
+  <nav class="nav-links">
+    <button data-scroll="bestsellers" data-i18n="bestTitle">Les plus demandés</button>
+    <button data-scroll="catalogue" data-i18n="catTitle">Notre catalogue</button>
+  </nav>
+  <div class="nav-drawer-foot">
+    <div class="lang-toggle">
+      <button id="lang-fr" class="active">FR</button>
+      <button id="lang-en">EN</button>
+    </div>
+  </div>
+</aside>
+
 <script>
 const API_BASE = "https://plateforme-gateaux.onrender.com/api/v1";
 
@@ -444,6 +517,7 @@ const i18n = {
     all: "Tous", loadError: "Impossible de charger le catalogue. Vérifie que l'API tourne sur", 
     orderSuccess: "Commande envoyée avec succès !", orderError: "Une erreur est survenue.",
     addrRequired: "Merci de renseigner une adresse de livraison.",
+    menuTitle: "Menu", searchPh: "Rechercher un gâteau...", bestBadge: "Populaire",
   },
   en: {
     brandName: "Douceurs d'Ivoire", brandTag: "Artisan bakery",
@@ -461,14 +535,17 @@ const i18n = {
     all: "All", loadError: "Could not load the catalogue. Check that the API is running on",
     orderSuccess: "Order placed successfully!", orderError: "Something went wrong.",
     addrRequired: "Please provide a delivery address.",
+    menuTitle: "Menu", searchPh: "Search for a cake...", bestBadge: "Popular",
   }
 };
 
 let currentLang = "fr";
 let cart = []; // { productId, name, price, quantity, image }
 let categories = [];
+let categoryNames = new Map();
 let activeCategory = null;
 let allProducts = [];
+const LOGO_URL = "https://i.ibb.co/jkrb9Hvq/file-00000000a35881f4b54043417d4310df.png";
 
 const t = (key) => i18n[currentLang][key] || key;
 const money = (n) => new Intl.NumberFormat("fr-FR").format(Math.round(n)) + " XOF";
@@ -491,13 +568,17 @@ function switchLang(lang) {
   document.getElementById("lang-fr").classList.toggle("active", lang === "fr");
   document.getElementById("lang-en").classList.toggle("active", lang === "en");
   applyI18n();
-  loadProducts();
+  loadCategoryNames().then(loadProducts);
   loadBestsellers();
   renderCart();
 }
 
 function productImage(p) {
-  return p.images?.[0]?.url || "";
+  return optimizeImg(p.images?.[0]?.url || "", 500);
+}
+function optimizeImg(url, width) {
+  if (!url || !url.includes("res.cloudinary.com")) return url;
+  return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
 }
 function productName(p) {
   return p.translations?.[0]?.name || p.sku;
@@ -506,8 +587,15 @@ function productDesc(p) {
   return p.translations?.[0]?.description || "";
 }
 
-async function loadCategories() {
-  // Pas d'endpoint catégories dédié listé — on déduit depuis les produits chargés
+async function loadCategoryNames() {
+  try {
+    const url = new URL(API_BASE + "/shop/categories");
+    url.searchParams.set("locale", currentLang);
+    const res = await fetch(url);
+    if (!res.ok) return;
+    const json = await res.json();
+    categoryNames = new Map((json.data || []).map(c => [c.id, c.name]));
+  } catch (err) { /* silencieux, on retombe sur l'id tronqué */ }
 }
 
 async function loadProducts() {
@@ -537,15 +625,56 @@ async function loadBestsellers() {
     if (!res.ok) throw new Error();
     const json = await res.json();
     const items = json.data || [];
+    renderHeroCarousel(items);
     if (items.length === 0) {
       document.getElementById("bestsellers").style.display = "none";
       return;
     }
     document.getElementById("bestsellers").style.display = "";
-    renderProducts(items, grid);
+    renderProducts(items, grid, { ribbon: "🔥 " + t("bestBadge") });
   } catch {
     document.getElementById("bestsellers").style.display = "none";
+    renderHeroCarousel([]);
   }
+}
+
+/* ---------- Carrousel de la bannière ---------- */
+let heroTimer = null;
+function renderHeroCarousel(items) {
+  const el = document.getElementById("hero-carousel");
+  if (!items || items.length === 0) {
+    clearInterval(heroTimer);
+    el.innerHTML = `<div class="hero-slide hero-slide-logo active"><img src="${LOGO_URL}" alt="Logo"></div>`;
+    return;
+  }
+  const slides = items.slice(0, 5);
+  el.innerHTML = slides.map((p, i) => `
+    <div class="hero-slide ${i === 0 ? "active" : ""}">
+      <img src="${productImage(p)}" alt="${productName(p)}" loading="${i === 0 ? "eager" : "lazy"}" decoding="async">
+      <div class="hero-slide-caption">${productName(p)}</div>
+    </div>`).join("")
+    + (slides.length > 1 ? `<div class="hero-dots">${slides.map((_, i) => `<button class="hero-dot ${i === 0 ? "active" : ""}" data-i="${i}" aria-label="Slide ${i + 1}"></button>`).join("")}</div>` : "");
+  if (slides.length > 1) startHeroCarousel(slides.length);
+}
+function setHeroSlide(i) {
+  document.querySelectorAll("#hero-carousel .hero-slide").forEach((s, idx) => s.classList.toggle("active", idx === i));
+  document.querySelectorAll("#hero-carousel .hero-dot").forEach((d, idx) => d.classList.toggle("active", idx === i));
+}
+function startHeroCarousel(count) {
+  clearInterval(heroTimer);
+  let heroIndex = 0;
+  heroTimer = setInterval(() => {
+    heroIndex = (heroIndex + 1) % count;
+    setHeroSlide(heroIndex);
+  }, 4500);
+  document.querySelectorAll("#hero-carousel .hero-dot").forEach(dot => {
+    dot.onclick = () => {
+      heroIndex = Number(dot.dataset.i);
+      setHeroSlide(heroIndex);
+      clearInterval(heroTimer);
+      startHeroCarousel(count);
+    };
+  });
 }
 
 function renderCategoryFilters(products) {
@@ -561,13 +690,13 @@ function renderCategoryFilters(products) {
   seen.forEach((id) => {
     const chip = document.createElement("button");
     chip.className = "filter-chip" + (activeCategory === id ? " active" : "");
-    chip.textContent = id.slice(0, 8);
+    chip.textContent = categoryNames.get(id) || id.slice(0, 8);
     chip.onclick = () => { activeCategory = id; loadProducts(); };
     container.appendChild(chip);
   });
 }
 
-function renderProducts(products, grid) {
+function renderProducts(products, grid, opts = {}) {
   if (products.length === 0) {
     grid.innerHTML = `<div class="empty-state">${t("emptyCart")}</div>`;
     return;
@@ -578,7 +707,11 @@ function renderProducts(products, grid) {
     card.className = "card";
     const img = productImage(p);
     card.innerHTML = `
-      <div class="card-img">${img ? `<img src="${img}" alt="${productName(p)}">` : ""}</div>
+      <div class="card-img">
+        ${img ? `<img src="${img}" alt="${productName(p)}" loading="lazy" decoding="async">` : ""}
+        <span class="card-badge"><img src="${LOGO_URL}" alt="" loading="lazy"></span>
+        ${opts.ribbon ? `<span class="card-ribbon">${opts.ribbon}</span>` : ""}
+      </div>
       <div class="card-body">
         <h3>${productName(p)}</h3>
         <div class="card-desc">${productDesc(p)}</div>
@@ -632,7 +765,7 @@ function renderCart() {
       const row = document.createElement("div");
       row.className = "cart-item";
       row.innerHTML = `
-        ${item.image ? `<img src="${item.image}" alt="${item.name}">` : `<div style="width:56px;height:56px;border-radius:10px;background:var(--panel)"></div>`}
+        ${item.image ? `<img src="${optimizeImg(item.image, 120)}" alt="${item.name}" loading="lazy" decoding="async">` : `<div style="width:56px;height:56px;border-radius:10px;background:var(--panel)"></div>`}
         <div class="cart-item-info">
           <h4>${item.name}</h4>
           <div>${money(item.price)}</div>
@@ -725,9 +858,40 @@ document.getElementById("checkout-btn").onclick = async () => {
 };
 
 applyI18n();
-loadProducts();
+loadCategoryNames().then(loadProducts);
 loadBestsellers();
 renderCart();
+
+/* ---------- Menu latéral ---------- */
+document.getElementById("menu-toggle").onclick = () => {
+  document.getElementById("nav-drawer").classList.add("open");
+  document.getElementById("nav-overlay").classList.add("open");
+};
+function closeNav() {
+  document.getElementById("nav-drawer").classList.remove("open");
+  document.getElementById("nav-overlay").classList.remove("open");
+}
+document.getElementById("nav-drawer-close").onclick = closeNav;
+document.getElementById("nav-overlay").onclick = closeNav;
+document.querySelectorAll(".nav-links button[data-scroll]").forEach(btn => {
+  btn.onclick = () => {
+    closeNav();
+    document.getElementById(btn.dataset.scroll).scrollIntoView({ behavior: "smooth" });
+  };
+});
+
+/* ---------- Recherche ---------- */
+document.getElementById("search-toggle").onclick = () => {
+  const bar = document.getElementById("search-bar");
+  bar.classList.toggle("open");
+  if (bar.classList.contains("open")) document.getElementById("search-input").focus();
+};
+document.getElementById("search-input").addEventListener("input", (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  const filtered = q ? allProducts.filter(p => productName(p).toLowerCase().includes(q)) : allProducts;
+  renderProducts(filtered, document.getElementById("products-grid"));
+  if (q) document.getElementById("catalogue").scrollIntoView({ behavior: "smooth" });
+});
 </script>
 </body>
 </html>
