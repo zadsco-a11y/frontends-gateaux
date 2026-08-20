@@ -270,20 +270,12 @@
   <div class="modal">
     <h3>Ajouter un gâteau</h3>
     <div class="field">
-      <label>Nom (Français)</label>
+      <label>Nom du gâteau</label>
       <input type="text" id="p-name-fr" placeholder="Ex: Fondant au chocolat">
     </div>
     <div class="field">
-      <label>Description (Français)</label>
+      <label>Description</label>
       <textarea id="p-desc-fr" placeholder="Décrivez le gâteau en quelques lignes..."></textarea>
-    </div>
-    <div class="field">
-      <label>Name (English)</label>
-      <input type="text" id="p-name-en" placeholder="Ex: Chocolate fondant">
-    </div>
-    <div class="field">
-      <label>Description (English)</label>
-      <textarea id="p-desc-en" placeholder="Describe the cake..."></textarea>
     </div>
     <div class="field-row">
       <div class="field">
@@ -296,20 +288,37 @@
       </div>
     </div>
     <div class="field">
-      <label>SKU (référence unique)</label>
-      <input type="text" id="p-sku" placeholder="Ex: FOND-CHOC-01">
+      <label>Catégorie</label>
+      <select id="p-category">
+        <option value="">Chargement des catégories…</option>
+      </select>
     </div>
     <div class="field">
-      <label>ID Catégorie</label>
-      <input type="text" id="p-category" placeholder="UUID de la catégorie">
+      <label>Recette / instructions <span style="font-weight:400;color:var(--ink-soft);">(optionnel)</span></label>
+      <textarea id="p-recipe" placeholder="Ex: ingrédients, étapes de préparation..."></textarea>
     </div>
     <div class="field">
-      <label>Allergènes (séparés par des virgules)</label>
+      <label>Allergènes, séparés par des virgules <span style="font-weight:400;color:var(--ink-soft);">(optionnel)</span></label>
       <input type="text" id="p-allergens" placeholder="Ex: gluten, oeufs, lait">
     </div>
     <div class="field">
       <label>Photo du gâteau</label>
       <input type="file" id="p-image" accept="image/*">
+    </div>
+    <details style="margin-bottom:16px;">
+      <summary style="cursor:pointer;font-size:0.84rem;font-weight:600;color:var(--ink-soft);">Traduction en anglais (optionnel)</summary>
+      <div class="field" style="margin-top:14px;">
+        <label>Name (English)</label>
+        <input type="text" id="p-name-en" placeholder="Ex: Chocolate fondant">
+      </div>
+      <div class="field">
+        <label>Description (English)</label>
+        <textarea id="p-desc-en" placeholder="Describe the cake..."></textarea>
+      </div>
+    </details>
+    <div class="field" style="display:none;">
+      <label>SKU (référence unique)</label>
+      <input type="text" id="p-sku" placeholder="Généré automatiquement">
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" id="close-product-modal">Annuler</button>
@@ -320,7 +329,7 @@
 </div>
 
 <script>
-const API_BASE = "https://plateforme-gateaux.onrender.com/api/v1";
+const API_BASE = "http://localhost:4000/api/v1";
 let accessToken = localStorage.getItem("admin_access_token") || "";
 let socket = null;
 
@@ -379,7 +388,7 @@ document.querySelectorAll(".nav-item").forEach(btn => {
 
 // ---------- WebSocket temps réel ----------
 function connectSocket() {
-  socket = io("https://plateforme-gateaux.onrender.com", { auth: { token: accessToken } });
+  socket = io("http://localhost:4000", { auth: { token: accessToken } });
   socket.on("connect", () => setWsStatus(true));
   socket.on("disconnect", () => setWsStatus(false));
   socket.on("connect_error", () => setWsStatus(false));
@@ -445,8 +454,32 @@ async function loadProducts() {
   } catch (err) { console.error(err); }
 }
 
+let categoriesCache = [];
+async function loadCategories() {
+  const select = document.getElementById("p-category");
+  try {
+    const res = await fetch(API_BASE + "/admin/categories?locale=fr", {
+      headers: { Authorization: "Bearer " + accessToken },
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error();
+    categoriesCache = json.data || [];
+    select.innerHTML = categoriesCache.length
+      ? `<option value="">Choisir une catégorie…</option>` + categoriesCache.map(c => `<option value="${c.id}">${c.name}</option>`).join("")
+      : `<option value="">Aucune catégorie disponible</option>`;
+  } catch (err) {
+    select.innerHTML = `<option value="">Erreur de chargement, réessayez</option>`;
+  }
+}
+
+function slugify(str) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 30);
+}
+
 document.getElementById("open-product-modal").onclick = () => {
   document.getElementById("product-modal").classList.add("open");
+  loadCategories();
 };
 document.getElementById("close-product-modal").onclick = () => {
   document.getElementById("product-modal").classList.remove("open");
@@ -461,16 +494,20 @@ document.getElementById("submit-product").onclick = async () => {
   const descEn = document.getElementById("p-desc-en").value.trim();
   const price = Number(document.getElementById("p-price").value);
   const stock = Number(document.getElementById("p-stock").value);
-  const sku = document.getElementById("p-sku").value.trim();
   const categoryId = document.getElementById("p-category").value.trim();
+  const recipe = document.getElementById("p-recipe").value.trim();
   const allergens = document.getElementById("p-allergens").value.split(",").map(s => s.trim()).filter(Boolean);
   const imageFile = document.getElementById("p-image").files[0];
 
-  if (!nameFr || !descFr || !price || !sku || !categoryId || !imageFile) {
-    msg.textContent = "Merci de remplir au minimum : nom FR, description FR, prix, SKU, catégorie et une photo.";
+  if (!nameFr || !descFr || !price || !categoryId || !imageFile) {
+    msg.textContent = "Merci de remplir au minimum : nom, description, prix, catégorie et une photo.";
     msg.style.color = "#C4295A";
     return;
   }
+
+  // SKU généré automatiquement à partir du nom (le vendeur n'a pas à s'en soucier)
+  const sku = slugify(nameFr) + "-" + Date.now().toString().slice(-5);
+  document.getElementById("p-sku").value = sku;
 
   const translations = [{ locale: "fr", name: nameFr, description: descFr }];
   if (nameEn && descEn) translations.push({ locale: "en", name: nameEn, description: descEn });
@@ -481,6 +518,7 @@ document.getElementById("submit-product").onclick = async () => {
   formData.append("stock", String(stock || 0));
   formData.append("categoryId", categoryId);
   formData.append("allergens", JSON.stringify(allergens));
+  if (recipe) formData.append("recipe", recipe);
   formData.append("translations", JSON.stringify(translations));
   formData.append("images", imageFile);
 
@@ -493,7 +531,8 @@ document.getElementById("submit-product").onclick = async () => {
     const json = await res.json();
     if (!res.ok) throw new Error(json.message || "Erreur lors de l'ajout du produit.");
     document.getElementById("product-modal").classList.remove("open");
-    ["p-name-fr","p-desc-fr","p-name-en","p-desc-en","p-price","p-stock","p-sku","p-category","p-allergens"]
+    ["p-name-fr","p-desc-fr","p-name-en","p-desc-en","p-price","p-stock","p-sku","p-recipe","p-allergens"]
+
       .forEach(id => document.getElementById(id).value = "");
     document.getElementById("p-image").value = "";
     loadProducts();
